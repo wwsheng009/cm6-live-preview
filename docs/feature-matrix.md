@@ -16,6 +16,10 @@
 | KaTeX 数学 | replace widget | `math.test.ts` |
 | fenced code 高亮 | markdown codeLanguages + 动态 import | `pnpm build` |
 | wikilink | mark + DOM handler | `wikiLinks.test.ts` |
+| embed 识别 | mark + DOM handler | `wikiLinks.test.ts` |
+| inline tag | mark + DOM handler | `tags.test.ts` |
+| callout | line decoration | `callouts.test.ts` |
+| frontmatter card | StateField + properties widget | `frontmatter.test.ts` |
 | `[[` 补全 | language data + autocomplete | 手工验证 |
 | 外链点击 | DOM handler | 手工验证 |
 | Live/Source 切换 | Compartment | `LivePreviewEditor.test.tsx` |
@@ -32,19 +36,20 @@
 | 表格 | 只读 widget | 单元格编辑、Tab 导航、增删行列 |
 | 数学 | 单行 `$...$` / `$$...$$` | 多行块公式、公式编辑面板 |
 | 图片 | 异步 resolver + 错误占位 | 附件桥、blob 生命周期 |
+| embed | 识别 + 样式 + 回调 | 内容渲染和引用更新 |
+| frontmatter | 只读 properties card | 字段编辑、类型选择 |
+| tag | 样式 + Ctrl/Cmd 点击回调 | tag 面板、重命名 |
 | 主题 | CSS 变量 + CM6 theme | 与主产品 token 对齐 |
 
 ## 计划中
 
 - 可编辑 table widget
 - 多行 block math
-- callout / admonition
-- embed `![[...]]`
+- embed 内容渲染
 - block reference `^id`
-- frontmatter / properties
-- inline tags
+- frontmatter / properties 编辑
+- tag 面板和重命名
 - hover preview
-- code block syntax highlighting
 - dynamic plugin extensions
 - large document performance benchmark
 - IME / iOS / Android 兼容性测试

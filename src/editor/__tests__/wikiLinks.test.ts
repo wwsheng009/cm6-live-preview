@@ -27,7 +27,25 @@ const makeView = (
 describe('scanWikiLinks', () => {
   it('finds target and alias ranges', () => {
     expect(scanWikiLinks('前[[项目|别名]]后')).toEqual([
-      { from: 1, to: 10, target: '项目', alias: '别名' },
+      {
+        from: 1,
+        to: 10,
+        target: '项目',
+        alias: '别名',
+        embedded: false,
+      },
+    ]);
+  });
+
+  it('recognizes embed syntax', () => {
+    expect(scanWikiLinks('![[项目]]')).toEqual([
+      {
+        from: 0,
+        to: 7,
+        target: '项目',
+        alias: '',
+        embedded: true,
+      },
     ]);
   });
 
@@ -73,6 +91,16 @@ describe('wikiLinks', () => {
       new MouseEvent('click', { bubbles: true, ctrlKey: true }),
     );
     expect(opened).toBe('项目笔记');
+    view.destroy();
+  });
+
+  it('styles embeds distinctly', () => {
+    const view = makeView('![[项目笔记]]');
+    expect(view.contentDOM.querySelector('.cm-live-embed')).not.toBeNull();
+    expect(
+      view.contentDOM.querySelector<HTMLElement>('.cm-live-embed')
+        ?.dataset.wikilinkEmbed,
+    ).toBe('true');
     view.destroy();
   });
 

@@ -21,6 +21,7 @@ export interface WikiLinkRange {
   readonly to: number;
   readonly target: string;
   readonly alias: string;
+  readonly embedded: boolean;
 }
 
 export interface WikiLinksOptions {
@@ -31,6 +32,7 @@ export interface WikiLinksOptions {
 
 const FENCE = /^(`{3,}|~{3,})/;
 const WIKILINK = /^\[\[([^[\]\n|]+)(?:\|([^[\]\n]+))?\]\]/;
+const EMBED = /^!\[\[([^[\]\n|]+)(?:\|([^[\]\n]+))?\]\]/;
 const MAX_SUGGESTIONS = 50;
 
 const normalize = (value: string): string =>
@@ -73,8 +75,11 @@ export const scanWikiLinks = (value: string): readonly WikiLinkRange[] => {
         index = close < 0 ? index + count : close + count;
         continue;
       }
-      if (line.startsWith('[[', index)) {
-        const match = WIKILINK.exec(line.slice(index));
+      const embedded = line.startsWith('![[', index);
+      if (embedded || line.startsWith('[[', index)) {
+        const match = (embedded ? EMBED : WIKILINK).exec(
+          line.slice(index),
+        );
         if (match !== null) {
           const target = (match[1] ?? '').trim();
           if (target !== '') {
@@ -83,6 +88,7 @@ export const scanWikiLinks = (value: string): readonly WikiLinkRange[] => {
               to: lineOffset + index + match[0].length,
               target,
               alias: (match[2] ?? '').trim(),
+              embedded,
             });
           }
           index += match[0].length;
@@ -141,15 +147,17 @@ const buildDecorations = (
   const builder = new RangeSetBuilder<Decoration>();
   for (const range of scanWikiLinks(state.doc.toString())) {
     const resolved = options.isResolved?.(range.target) ?? true;
+    const baseClass = range.embedded ? 'cm-live-embed' : 'cm-live-wikilink';
     builder.add(
       range.from,
       range.to,
       Decoration.mark({
-        class: `cm-live-wikilink${
+        class: `${baseClass}${
           resolved ? '' : ' cm-live-wikilink--unresolved'
         }`,
         attributes: {
           'data-wikilink-target': range.target,
+          'data-wikilink-embed': range.embedded ? 'true' : 'false',
           title: range.target,
         },
       }),
@@ -192,7 +200,7 @@ export const wikiLinks = (options: WikiLinksOptions = {}): Extension => {
         if (!(event.ctrlKey || event.metaKey)) return false;
         if (!(event.target instanceof Element)) return false;
         const element = event.target.closest<HTMLElement>(
-          '.cm-live-wikilink',
+          '.cm-live-wikilink, .cm-live-embed',
         );
         const target = element?.dataset.wikilinkTarget?.trim() ?? '';
         if (target === '') return false;

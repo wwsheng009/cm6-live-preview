@@ -18,13 +18,16 @@ import {
   lineNumbers,
 } from '@codemirror/view';
 
+import { callouts } from './callouts';
 import { markdownCodeLanguages } from './codeLanguages';
 import { coreSetup } from './core/setup';
+import { frontmatterField } from './frontmatter';
 import { imageBlocks } from './imageBlocks';
 import { externalLinkClicks } from './linkClicks';
 import { livePreview } from './livePreview';
 import { livePreviewTheme } from './livePreviewTheme';
 import { mathPreview } from './math';
+import { inlineTags } from './tags';
 import { tableWidget } from './tableWidget';
 import { wikiLinks } from './wikiLinks';
 
@@ -38,6 +41,7 @@ export interface LivePreviewEditorProps {
   readonly wikiSuggestions?: readonly string[];
   readonly isWikiLinkResolved?: (target: string) => boolean;
   readonly onOpenWikiLink?: (target: string) => void;
+  readonly onOpenTag?: (tag: string) => void;
   readonly resolveImage?: (
     src: string,
     alt: string,
@@ -74,6 +78,7 @@ export const LivePreviewEditor = forwardRef<
     wikiSuggestions = [],
     isWikiLinkResolved,
     onOpenWikiLink,
+    onOpenTag,
     resolveImage,
     onOpenLink,
     extensions = EMPTY_EXTENSIONS,
@@ -92,6 +97,7 @@ export const LivePreviewEditor = forwardRef<
   const wikiSuggestionsRef = useRef<readonly string[]>(wikiSuggestions);
   const isWikiLinkResolvedRef = useRef(isWikiLinkResolved);
   const onOpenWikiLinkRef = useRef(onOpenWikiLink);
+  const onOpenTagRef = useRef(onOpenTag);
   const resolveImageRef = useRef(resolveImage);
   const onOpenLinkRef = useRef(onOpenLink);
   const livePreviewCompartment = useRef(new Compartment());
@@ -105,6 +111,7 @@ export const LivePreviewEditor = forwardRef<
   wikiSuggestionsRef.current = wikiSuggestions;
   isWikiLinkResolvedRef.current = isWikiLinkResolved;
   onOpenWikiLinkRef.current = onOpenWikiLink;
+  onOpenTagRef.current = onOpenTag;
   resolveImageRef.current = resolveImage;
   onOpenLinkRef.current = onOpenLink;
   const extensionsRef = useRef<readonly Extension[]>(extensions);
@@ -116,6 +123,9 @@ export const LivePreviewEditor = forwardRef<
     imageBlocks({
       resolveSrc: (src, alt) => resolveImageRef.current?.(src, alt) ?? src,
     }),
+    frontmatterField(),
+    callouts(),
+    inlineTags({ onOpen: (tag) => onOpenTagRef.current?.(tag) }),
     mathPreview(),
     tableWidget(),
   ];

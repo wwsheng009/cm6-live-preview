@@ -94,6 +94,68 @@ export const livePreviewTheme = EditorView.theme({
     textDecoration: 'line-through',
     textDecorationColor: 'var(--lab-fg-subtle)',
   },
+  '.cm-live-embed': {
+    padding: '0 0.2em',
+    border: '1px solid color-mix(in srgb, var(--lab-link) 30%, transparent)',
+    borderRadius: '4px',
+    backgroundColor: 'color-mix(in srgb, var(--lab-link) 8%, transparent)',
+    color: 'var(--lab-link)',
+    cursor: 'pointer',
+  },
+  '.cm-live-tag': {
+    padding: '0 0.35em',
+    borderRadius: '999px',
+    backgroundColor: 'color-mix(in srgb, var(--lab-accent) 12%, transparent)',
+    color: 'var(--lab-accent)',
+    fontSize: '0.9em',
+    cursor: 'pointer',
+  },
+  '.cm-live-callout': {
+    borderLeft: '3px solid var(--lab-accent-soft)',
+    backgroundColor: 'color-mix(in srgb, var(--lab-accent) 5%, transparent)',
+    paddingLeft: '1em',
+  },
+  '.cm-live-callout--warning, .cm-live-callout--caution': {
+    borderLeftColor: '#d58b5b',
+    backgroundColor: 'rgba(213, 139, 91, 0.08)',
+  },
+  '.cm-live-callout--danger, .cm-live-callout--error': {
+    borderLeftColor: '#d77b7b',
+    backgroundColor: 'rgba(215, 123, 123, 0.08)',
+  },
+  '.cm-live-callout--tip, .cm-live-callout--success': {
+    borderLeftColor: '#7fb68f',
+    backgroundColor: 'rgba(127, 182, 143, 0.08)',
+  },
+  '.cm-live-frontmatter': {
+    margin: '0 0 1.4em',
+    padding: '12px 14px',
+    border: '1px solid var(--lab-border)',
+    borderRadius: '9px',
+    backgroundColor: 'color-mix(in srgb, var(--lab-panel) 70%, transparent)',
+    fontSize: '0.9em',
+  },
+  '.cm-live-frontmatter__title': {
+    marginBottom: '8px',
+    color: 'var(--lab-fg-subtle)',
+    fontSize: '10px',
+    fontWeight: '700',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+  },
+  '.cm-live-frontmatter__row': {
+    display: 'grid',
+    gridTemplateColumns: '130px minmax(0, 1fr)',
+    gap: '10px',
+    padding: '3px 0',
+  },
+  '.cm-live-frontmatter__key': {
+    color: 'var(--lab-fg-subtle)',
+  },
+  '.cm-live-frontmatter__value': {
+    color: 'var(--lab-editor-fg)',
+    overflowWrap: 'anywhere',
+  },
   '.cm-live-list-mark': {
     color: 'var(--lab-accent)',
   },

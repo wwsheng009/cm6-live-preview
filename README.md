@@ -47,6 +47,10 @@
 - GFM 表格只读 widget（光标进入表格时显示源码）
 - KaTeX 行内/单行块级公式
 - 常用 fenced code 语言高亮（JS/TS/TSX/Python/HTML/CSS/JSON，按需加载）
+- `#tag` 行内标签样式和点击回调
+- Obsidian 风格 blockquote callout（note/tip/warning/danger 等）
+- frontmatter 只读 properties card（光标进入时显示源码）
+- `![[embed]]` 识别、样式和点击回调
 - Live Preview / Source 模式切换
 - read-only 模式
 - 宿主自定义 CM6 extension 注入
@@ -58,8 +62,10 @@
 - 可编辑 WYSIWYG 表格（当前只读）
 - 表格单元格导航和增删行列
 - 多行 `$$...$$` 块级公式
-- callout / embed / block ref
-- frontmatter / properties / inline tags
+- embed 内容渲染（当前只识别和样式化）
+- block reference 跳转
+- frontmatter 编辑
+- properties 编辑和 tag 面板
 - hover preview
 - 更多代码语言和代码复制按钮
 - 附件桥和 blob/data URL 生命周期管理
@@ -112,6 +118,6 @@ docs/
 
 1. 增加附件桥和更完整的图片生命周期管理
 2. 表格 widget 从只读升级为单元格编辑
-3. 接入 callout、embed、frontmatter、properties
-4. 完善插件 extension 接口和动态扩展
+3. 接入 embed 内容渲染、block ref 跳转和 hover preview
+4. 完善 properties 编辑和插件 extension 接口
 5. 用真实笔记做 IME、撤销、滚动和大文档基准测试

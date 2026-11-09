@@ -28,7 +28,10 @@ $$\int_0^1 x^2 dx = \frac{1}{3}$$
 - 普通列表项
 - 另一个列表项
 
-> Live Preview 的关键不是“替换成 HTML”，而是让 Markdown 文本仍然可编辑。
+> [!note] Live Preview 的关键
+> 不是“替换成 HTML”，而是让 Markdown 文本仍然可编辑。
+
+标签：#cm6 #markdown
 
 ## Wiki links
 
@@ -142,6 +145,9 @@ export function App(): JSX.Element {
             isWikiLinkResolved={(target) => resolvedTitles.has(target)}
             onOpenWikiLink={(target) => {
               setLastAction(`Open wiki link: ${target}`);
+            }}
+            onOpenTag={(tag) => {
+              setLastAction(`Open tag: #${tag}`);
             }}
             onOpenLink={(href) => {
               setLastAction(`Open external link: ${href}`);

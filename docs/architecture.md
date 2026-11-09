@@ -15,6 +15,9 @@ CodeMirror 6 EditorView
   ├── tableWidget()        StateField / read-only table widgets
   ├── imageBlocks()        StateField / block widgets
   ├── wikiLinks()          ViewPlugin + DOM events + autocomplete
+  ├── frontmatterField()   StateField / properties card
+  ├── callouts()           line decorations
+  ├── inlineTags()         mark decorations + click
   ├── markdown codeLanguages
   ├── host extensions      Compartment
   └── livePreviewTheme
@@ -87,13 +90,23 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 
 这保持了与 Markdown 解析器的解耦，也方便以后接入笔记目录和异步解析器。
 
+## 4.1 标签、callout 和 frontmatter
+
+- `inlineTags()` 扫描 `#tag`，跳过标题和代码
+- `callouts()` 扫描 `> [!note]` 及其后续引用行
+- `frontmatterField()` 在选区离开时把 YAML 头替换为只读 properties card
+- `![[embed]]` 与普通 wikilink 共用扫描器，但使用独立样式和 `data-wikilink-embed`
+
+这些能力都只修改 view 层，不改变原始 Markdown。
+
 ## 5. 模式切换
 
-`LivePreviewEditor` 使用三个 Compartment：
+`LivePreviewEditor` 使用四个 Compartment：
 
 - `livePreviewCompartment`：在 `livePreview()` 与 `[]` 之间切换
 - `lineNumbersCompartment`：source 模式显示行号
 - `editableCompartment`：read-only 切换
+- `extensionsCompartment`：宿主 CM6 extension 注入
 
 因此切换模式不会销毁 EditorView，也不会丢失文档、撤销栈和滚动位置。
 
