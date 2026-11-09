@@ -4,7 +4,11 @@ import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { Table } from '@lezer/markdown';
 
-import { parseTable, tableWidget } from '../tableWidget';
+import {
+  parseTable,
+  serializeTable,
+  tableWidget,
+} from '../tableWidget';
 
 const makeView = (doc: string): EditorView => {
   const parent = document.createElement('div');
@@ -35,16 +39,52 @@ describe('parseTable', () => {
   it('rejects non-table text', () => {
     expect(parseTable('not a table')).toBeNull();
   });
+
+  it('serializes edited cells and alignment', () => {
+    expect(
+      serializeTable(
+        ['Name', 'Value'],
+        [['A|B', '1\n2']],
+        ['left', 'right'],
+      ),
+    ).toBe('| Name | Value |\n| :--- | ---: |\n| A\\|B | 1 2 |');
+  });
 });
 
 describe('tableWidget', () => {
-  it('renders a read-only table when the selection is outside it', () => {
+  it('renders an editable table when the selection is outside it', () => {
     const view = makeView(`${TABLE}\n\nAfter`);
     view.dispatch({ selection: { anchor: view.state.doc.length } });
     expect(view.contentDOM.querySelector('.cm-live-table table')).not.toBeNull();
     expect(
       view.contentDOM.querySelector('.cm-live-table th')?.textContent,
     ).toBe('Name');
+    view.destroy();
+  });
+
+  it('saves cell edits back to Markdown', () => {
+    const view = makeView(`${TABLE}\n\nAfter`);
+    view.dispatch({ selection: { anchor: view.state.doc.length } });
+    const header = view.contentDOM.querySelector(
+      '.cm-live-table thead th',
+    );
+    if (header === null) throw new Error('table header not rendered');
+    header.textContent = 'Updated';
+    view.contentDOM
+      .querySelector<HTMLButtonElement>('[data-action="save"]')
+      ?.click();
+    expect(view.state.doc.toString()).toContain('| Updated | Value |');
+    view.destroy();
+  });
+
+  it('switches table widget back to Markdown source', () => {
+    const view = makeView(`${TABLE}\n\nAfter`);
+    view.dispatch({ selection: { anchor: view.state.doc.length } });
+    view.contentDOM
+      .querySelector<HTMLButtonElement>('[data-action="source"]')
+      ?.click();
+    expect(view.contentDOM.querySelector('.cm-live-table')).toBeNull();
+    expect(view.contentDOM.textContent).toContain('| Name | Value |');
     view.destroy();
   });
 

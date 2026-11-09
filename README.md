@@ -44,12 +44,12 @@
 - Markdown 图片 block widget
 - 异步图片资产 resolver、加载/失败占位
 - 水平线 widget
-- GFM 表格只读 widget（光标进入表格时显示源码）
+- GFM 表格可编辑 widget（单元格编辑、Save/Markdown 切换）
 - KaTeX 行内/单行块级公式
 - 常用 fenced code 语言高亮（JS/TS/TSX/Python/HTML/CSS/JSON，按需加载）
 - `#tag` 行内标签样式和点击回调
 - Obsidian 风格 blockquote callout（note/tip/warning/danger 等）
-- frontmatter 只读 properties card（光标进入时显示源码）
+- frontmatter properties card（字段编辑、Save/Markdown 切换）
 - `![[embed]]` 识别、样式和点击回调
 - wikilink/embed hover preview（由宿主 `wikiPreview` 回调提供内容）
 - Live Preview / Source 模式切换
@@ -60,13 +60,11 @@
 
 ## 尚未实现
 
-- 可编辑 WYSIWYG 表格（当前只读）
-- 表格单元格导航和增删行列
+- 表格 Tab 导航、行列增删和单元格公式
 - 多行 `$$...$$` 块级公式
 - embed 内容渲染（当前只识别和样式化）
 - block reference 跳转
-- frontmatter 编辑
-- properties 编辑和 tag 面板
+- properties 类型选择和 tag 面板
 - embed hover 的内容编辑和引用更新
 - 更多代码语言和代码复制按钮
 - 附件桥和 blob/data URL 生命周期管理
@@ -118,7 +116,7 @@ docs/
 ## 下一步
 
 1. 增加附件桥和更完整的图片生命周期管理
-2. 表格 widget 从只读升级为单元格编辑
+2. 表格 Tab 导航、行列增删和组合编辑
 3. 接入 embed 内容渲染、block ref 跳转和 hover preview
 4. 完善 properties 编辑和插件 extension 接口
 5. 用真实笔记做 IME、撤销、滚动和大文档基准测试

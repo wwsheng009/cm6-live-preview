@@ -71,13 +71,14 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 
 ## 3.2 表格
 
-当前表格实现是只读 widget：
+当前表格实现是可编辑 widget：
 
-- 选区在表格外时，整张 GFM 表格替换为 `<table>`
+- 选区在表格外时，整张 GFM 表格替换为可编辑 `<table>`
 - 选区进入表格时，重新显示原始 Markdown
-- 点击表格会把选区移动到表格起点
+- 单元格使用 `contenteditable`，Save 按钮或 Ctrl/Cmd+Enter 提交
+- Markdown 按钮把选区移到表格起点，显示源码
 
-可编辑单元格、Tab 导航和行列操作尚未实现。
+Tab 导航、行列操作和单元格内复杂 Markdown 尚未实现。
 
 ## 4. 为什么 wikilink 单独实现
 
@@ -115,7 +116,7 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 ## 6. 当前边界
 
 - 表格保留 Markdown 源文本，未做 WYSIWYG table widget
-- 表格目前只读
+- 表格编辑是整表提交，不是逐单元格事务
 - 块级数学公式仅支持单行
 - 没有自定义 Markdown parser extension 处理 `[[]]`
 - 还没有附件桥和 blob/data URL 生命周期管理

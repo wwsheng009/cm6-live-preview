@@ -136,7 +136,8 @@ export const livePreviewTheme = EditorView.theme({
     fontSize: '0.9em',
   },
   '.cm-live-frontmatter__title': {
-    marginBottom: '8px',
+    flex: '1 1 auto',
+    marginBottom: '0',
     color: 'var(--lab-fg-subtle)',
     fontSize: '10px',
     fontWeight: '700',
@@ -155,6 +156,17 @@ export const livePreviewTheme = EditorView.theme({
   '.cm-live-frontmatter__value': {
     color: 'var(--lab-editor-fg)',
     overflowWrap: 'anywhere',
+  },
+  '.cm-live-frontmatter__toolbar': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '8px',
+  },
+  '.cm-live-frontmatter__value[contenteditable="true"]:focus': {
+    outline: '1px solid var(--lab-accent)',
+    outlineOffset: '2px',
+    borderRadius: '3px',
   },
   '.cm-live-list-mark': {
     color: 'var(--lab-accent)',
@@ -243,6 +255,31 @@ export const livePreviewTheme = EditorView.theme({
     margin: '0.8em 0 1.2em',
     overflowX: 'auto',
   },
+  '.cm-live-table__toolbar': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '6px',
+    color: 'var(--lab-fg-subtle)',
+    fontSize: '11px',
+  },
+  '.cm-live-table__action, .cm-live-frontmatter__action': {
+    padding: '3px 8px',
+    border: '1px solid var(--lab-border)',
+    borderRadius: '5px',
+    background: 'var(--lab-panel)',
+    color: 'var(--lab-fg-muted)',
+    fontSize: '11px',
+    cursor: 'pointer',
+  },
+  '.cm-live-table__action:hover, .cm-live-frontmatter__action:hover': {
+    borderColor: 'var(--lab-border-strong)',
+    color: 'var(--lab-editor-fg)',
+  },
+  '.cm-live-table__action--primary, .cm-live-frontmatter__action--primary': {
+    borderColor: 'color-mix(in srgb, var(--lab-accent) 50%, transparent)',
+    color: 'var(--lab-accent)',
+  },
   '.cm-live-table table': {
     width: '100%',
     minWidth: '420px',
@@ -262,5 +299,10 @@ export const livePreviewTheme = EditorView.theme({
   },
   '.cm-live-table tbody tr:nth-child(even)': {
     backgroundColor: 'color-mix(in srgb, var(--lab-panel) 42%, transparent)',
+  },
+  '.cm-live-table th[contenteditable="true"]:focus, .cm-live-table td[contenteditable="true"]:focus': {
+    outline: '1px solid var(--lab-accent)',
+    outlineOffset: '-1px',
+    backgroundColor: 'color-mix(in srgb, var(--lab-accent) 8%, transparent)',
   },
 });

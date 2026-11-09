@@ -65,27 +65,48 @@ class FrontmatterWidget extends WidgetType {
   constructor(
     readonly entries: readonly FrontmatterEntry[],
     readonly from: number,
+    readonly to: number,
+    readonly raw: string,
   ) {
     super();
   }
 
   eq(other: FrontmatterWidget): boolean {
-    return other.from === this.from && other.entries === this.entries;
+    return (
+      other.from === this.from &&
+      other.to === this.to &&
+      other.raw === this.raw
+    );
   }
 
   toDOM(view: EditorView): HTMLElement {
     const card = document.createElement('div');
     card.className = 'cm-live-frontmatter';
-    card.addEventListener('mousedown', (event) => {
-      event.preventDefault();
-      view.dispatch({ selection: { anchor: this.from } });
-      view.focus();
-    });
+    const toolbar = document.createElement('div');
+    toolbar.className = 'cm-live-frontmatter__toolbar';
 
     const title = document.createElement('div');
     title.className = 'cm-live-frontmatter__title';
     title.textContent = 'Properties';
-    card.append(title);
+    toolbar.append(title);
+
+    const source = document.createElement('button');
+    source.type = 'button';
+    source.className = 'cm-live-frontmatter__action';
+    source.textContent = 'Markdown';
+    source.addEventListener('mousedown', (event) => event.preventDefault());
+    source.addEventListener('click', () => {
+      view.dispatch({ selection: { anchor: this.from } });
+      view.focus();
+    });
+
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'cm-live-frontmatter__action cm-live-frontmatter__action--primary';
+    save.textContent = 'Save';
+    save.addEventListener('mousedown', (event) => event.preventDefault());
+    toolbar.append(source, save);
+    card.append(toolbar);
 
     for (const entry of this.entries) {
       const row = document.createElement('div');
@@ -96,9 +117,39 @@ class FrontmatterWidget extends WidgetType {
       const value = document.createElement('span');
       value.className = 'cm-live-frontmatter__value';
       value.textContent = entry.value;
+      value.contentEditable = 'true';
+      value.spellcheck = false;
       row.append(key, value);
       card.append(row);
     }
+
+    const commit = (): void => {
+      const entries = [...card.querySelectorAll('.cm-live-frontmatter__row')]
+        .map((row) => {
+          const key = row.querySelector('.cm-live-frontmatter__key')?.textContent ?? '';
+          const value = row.querySelector('.cm-live-frontmatter__value')?.textContent ?? '';
+          return { key: key.trim(), value: value.trim() };
+        })
+        .filter((entry) => entry.key !== '');
+      const next = [
+        '---',
+        ...entries.map((entry) => `${entry.key}: ${entry.value}`),
+        '---',
+      ].join('\n');
+      if (next === this.raw) return;
+      view.dispatch({
+        changes: { from: this.from, to: this.to, insert: next },
+        userEvent: 'input',
+      });
+      view.focus();
+    };
+    save.addEventListener('click', commit);
+    card.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        commit();
+      }
+    });
     return card;
   }
 
@@ -114,9 +165,15 @@ const buildFrontmatter = (state: EditorView['state']): DecorationSet => {
     (range) => range.from <= parsed.to && range.to >= parsed.from,
   );
   if (active) return Decoration.none;
+  const raw = state.doc.sliceString(parsed.from, parsed.to);
   const ranges: Range<Decoration>[] = [
     Decoration.replace({
-      widget: new FrontmatterWidget(parsed.entries, parsed.from),
+      widget: new FrontmatterWidget(
+        parsed.entries,
+        parsed.from,
+        parsed.to,
+        raw,
+      ),
       block: true,
     }).range(parsed.from, parsed.to),
   ];

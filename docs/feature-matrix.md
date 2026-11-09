@@ -12,7 +12,7 @@
 | 图片预览 | StateField + block widget | `livePreview.test.ts` |
 | 异步图片 resolver | widget 内部 Promise 更新 | `LivePreviewEditor.test.tsx` |
 | 水平线 | replace widget | 手工验证 |
-| 只读表格 | StateField + replace block widget | `tableWidget.test.ts` |
+| 可编辑表格 | StateField + contenteditable widget | `tableWidget.test.ts` |
 | KaTeX 数学 | replace widget | `math.test.ts` |
 | fenced code 高亮 | markdown codeLanguages + 动态 import | `pnpm build` |
 | wikilink | mark + DOM handler | `wikiLinks.test.ts` |
@@ -33,8 +33,7 @@
 |---|---|---|
 | 代码块 | 行类样式 | 语法高亮、复制按钮 |
 | 列表 | 保留 Markdown 标记 + 行类 | bullet/ordered 视觉替换 |
-| 表格 | 保留 Markdown 文本 | 只读 table widget → 单元格编辑 |
-| 表格 | 只读 widget | 单元格编辑、Tab 导航、增删行列 |
+| 表格 | 可编辑 widget、整表提交 | Tab 导航、行列增删、逐单元格事务 |
 | 数学 | 单行 `$...$` / `$$...$$` | 多行块公式、公式编辑面板 |
 | 图片 | 异步 resolver + 错误占位 | 附件桥、blob 生命周期 |
 | embed | 识别 + 样式 + 回调 | 内容渲染和引用更新 |

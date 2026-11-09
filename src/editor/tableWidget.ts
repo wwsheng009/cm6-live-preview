@@ -56,22 +56,44 @@ class TableWidget extends WidgetType {
     readonly table: ParsedTable,
     readonly raw: string,
     readonly from: number,
+    readonly to: number,
   ) {
     super();
   }
 
   eq(other: TableWidget): boolean {
-    return other.from === this.from && other.raw === this.raw;
+    return (
+      other.from === this.from &&
+      other.to === this.to &&
+      other.raw === this.raw
+    );
   }
 
   toDOM(view: EditorView): HTMLElement {
     const wrapper = document.createElement('div');
     wrapper.className = 'cm-live-table';
-    wrapper.addEventListener('mousedown', (event) => {
-      event.preventDefault();
+    const toolbar = document.createElement('div');
+    toolbar.className = 'cm-live-table__toolbar';
+    const hint = document.createElement('span');
+    hint.textContent = 'Table';
+    const source = document.createElement('button');
+    source.type = 'button';
+    source.className = 'cm-live-table__action';
+    source.dataset.action = 'source';
+    source.textContent = 'Markdown';
+    source.addEventListener('mousedown', (event) => event.preventDefault());
+    source.addEventListener('click', () => {
       view.dispatch({ selection: { anchor: this.from } });
       view.focus();
     });
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'cm-live-table__action cm-live-table__action--primary';
+    save.dataset.action = 'save';
+    save.textContent = 'Save';
+    save.addEventListener('mousedown', (event) => event.preventDefault());
+    toolbar.append(hint, source, save);
+    wrapper.append(toolbar);
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
@@ -79,6 +101,8 @@ class TableWidget extends WidgetType {
     for (const [index, cell] of this.table.header.entries()) {
       const th = document.createElement('th');
       th.textContent = cell;
+      th.contentEditable = 'true';
+      th.spellcheck = false;
       const align = this.table.align[index];
       if (align !== null) th.style.textAlign = align;
       headerRow.append(th);
@@ -92,6 +116,8 @@ class TableWidget extends WidgetType {
       for (const [index, cell] of row.entries()) {
         const td = document.createElement('td');
         td.textContent = cell;
+        td.contentEditable = 'true';
+        td.spellcheck = false;
         const align = this.table.align[index];
         if (align !== null) td.style.textAlign = align;
         tr.append(td);
@@ -100,6 +126,29 @@ class TableWidget extends WidgetType {
     }
     table.append(tbody);
     wrapper.append(table);
+
+    const commit = (): void => {
+      const header = [...table.querySelectorAll('thead th')].map(
+        (cell) => cell.textContent ?? '',
+      );
+      const rows = [...table.querySelectorAll('tbody tr')].map((row) =>
+        [...row.querySelectorAll('td')].map((cell) => cell.textContent ?? ''),
+      );
+      const next = serializeTable(header, rows, this.table.align);
+      if (next === this.raw) return;
+      view.dispatch({
+        changes: { from: this.from, to: this.to, insert: next },
+        userEvent: 'input',
+      });
+      view.focus();
+    };
+    save.addEventListener('click', commit);
+    wrapper.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        commit();
+      }
+    });
     return wrapper;
   }
 
@@ -107,6 +156,30 @@ class TableWidget extends WidgetType {
     return true;
   }
 }
+
+const escapeCell = (value: string): string =>
+  value.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+
+const delimiterFor = (align: Align): string => {
+  if (align === 'center') return ':---:';
+  if (align === 'left') return ':---';
+  if (align === 'right') return '---:';
+  return '---';
+};
+
+export const serializeTable = (
+  header: readonly string[],
+  rows: readonly (readonly string[])[],
+  align: readonly Align[],
+): string => {
+  const line = (cells: readonly string[]): string =>
+    `| ${cells.map(escapeCell).join(' | ')} |`;
+  return [
+    line(header),
+    line(header.map((_, index) => delimiterFor(align[index] ?? null))),
+    ...rows.map((row) => line(header.map((_, index) => row[index] ?? ''))),
+  ].join('\n');
+};
 
 const buildTables = (state: EditorState): DecorationSet => {
   ensureSyntaxTree(state, state.doc.length, 200);
@@ -123,7 +196,7 @@ const buildTables = (state: EditorState): DecorationSet => {
       if (parsed === null) return;
       ranges.push(
         Decoration.replace({
-          widget: new TableWidget(parsed, raw, node.from),
+          widget: new TableWidget(parsed, raw, node.from, node.to),
           block: true,
         }).range(node.from, node.to),
       );

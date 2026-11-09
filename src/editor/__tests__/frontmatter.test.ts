@@ -54,4 +54,27 @@ describe('frontmatterField', () => {
     expect(view.contentDOM.textContent).toContain('title: Demo');
     view.destroy();
   });
+
+  it('saves edited property values back to YAML', () => {
+    const parent = document.createElement('div');
+    document.body.append(parent);
+    const view = new EditorView({
+      parent,
+      state: EditorState.create({
+        doc: DOC,
+        extensions: [frontmatterField()],
+      }),
+    });
+    view.dispatch({ selection: { anchor: view.state.doc.length } });
+    const value = view.contentDOM.querySelector(
+      '.cm-live-frontmatter__value',
+    );
+    if (value === null) throw new Error('frontmatter value not rendered');
+    value.textContent = 'Updated';
+    view.contentDOM
+      .querySelector<HTMLButtonElement>('.cm-live-frontmatter__action--primary')
+      ?.click();
+    expect(view.state.doc.toString()).toContain('title: Updated');
+    view.destroy();
+  });
 });
