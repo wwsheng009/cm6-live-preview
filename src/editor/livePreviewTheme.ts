@@ -145,8 +145,60 @@ export const livePreviewTheme = EditorView.theme({
     boxShadow: '0 8px 28px color-mix(in srgb, #000 18%, transparent)',
     objectFit: 'contain',
   },
+  '.cm-live-image-loading, .cm-live-image-error': {
+    display: 'inline-flex',
+    minHeight: '32px',
+    alignItems: 'center',
+    padding: '6px 10px',
+    border: '1px dashed var(--lab-border)',
+    borderRadius: '7px',
+    color: 'var(--lab-fg-subtle)',
+    fontSize: '12px',
+  },
+  '.cm-live-image-error': {
+    color: 'var(--lab-link)',
+    textDecoration: 'line-through',
+  },
   '.cm-live-image-caption': {
     color: 'var(--lab-fg-subtle)',
     fontSize: '12px',
+  },
+  '.cm-live-math': {
+    display: 'inline-block',
+    padding: '0 1px',
+    borderRadius: '3px',
+    backgroundColor: 'color-mix(in srgb, var(--lab-link) 7%, transparent)',
+    cursor: 'text',
+  },
+  '.cm-live-math--block': {
+    display: 'block',
+    margin: '0.7em 0',
+    padding: '0.7em 0.5em',
+    textAlign: 'center',
+    overflowX: 'auto',
+  },
+  '.cm-live-table': {
+    margin: '0.8em 0 1.2em',
+    overflowX: 'auto',
+  },
+  '.cm-live-table table': {
+    width: '100%',
+    minWidth: '420px',
+    borderCollapse: 'collapse',
+    fontSize: '0.9em',
+  },
+  '.cm-live-table th, .cm-live-table td': {
+    padding: '0.5em 0.7em',
+    border: '1px solid var(--lab-border)',
+    textAlign: 'left',
+    verticalAlign: 'top',
+  },
+  '.cm-live-table th': {
+    backgroundColor: 'var(--lab-code-bg)',
+    color: 'var(--lab-editor-fg)',
+    fontWeight: '600',
+  },
+  '.cm-live-table tbody tr:nth-child(even)': {
+    backgroundColor: 'color-mix(in srgb, var(--lab-panel) 42%, transparent)',
   },
 });

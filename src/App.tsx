@@ -15,6 +15,10 @@ const SAMPLE = `# CM6 Live Preview Lab
 
 支持 **粗体**、*斜体*、~~删除线~~、\`inline code\`，以及 [外部链接](https://codemirror.net/)。
 
+数学公式：$E = mc^2$，以及块级公式：
+
+$$\int_0^1 x^2 dx = \frac{1}{3}$$
+
 ## 任务与列表
 
 - [ ] 完成 inline preview decoration
@@ -50,7 +54,7 @@ console.log('raw markdown remains the source of truth');
 | inline preview | ✅ | 当前行显示 Markdown 标记 |
 | task widget | ✅ | checkbox 可直接切换 |
 | wikilink | ✅ | 支持补全与点击回调 |
-| table widget | 计划中 | 先保留 Markdown 源文本 |
+| table widget | ✅ | 光标离开后渲染为只读表格 |
 `;
 
 const WIKI_TITLES = ['项目笔记', 'Project Notes', '设计文档', 'CM6 研究'];

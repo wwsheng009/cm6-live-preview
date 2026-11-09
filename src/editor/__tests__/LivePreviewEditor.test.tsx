@@ -75,4 +75,21 @@ describe('LivePreviewEditor', () => {
       ).toBe('false'),
     );
   });
+
+  it('supports an asynchronous image resolver', async () => {
+    render(
+      <LivePreviewEditor
+        value={'![asset](assets/pic.png)'}
+        onChange={() => undefined}
+        resolveImage={async () => '/demo.svg'}
+      />,
+    );
+
+    await waitFor(() => {
+      const image = document.querySelector<HTMLImageElement>(
+        '.cm-live-image-block img',
+      );
+      expect(image?.getAttribute('src')).toBe('/demo.svg');
+    });
+  });
 });

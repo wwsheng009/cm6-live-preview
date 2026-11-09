@@ -11,8 +11,12 @@ CodeMirror 6 EditorView
   ├── Markdown parser
   ├── coreSetup
   ├── livePreview()        ViewPlugin / inline decorations
+  ├── mathPreview()        ViewPlugin / KaTeX widgets
+  ├── tableWidget()        StateField / read-only table widgets
   ├── imageBlocks()        StateField / block widgets
   ├── wikiLinks()          ViewPlugin + DOM events + autocomplete
+  ├── markdown codeLanguages
+  ├── host extensions      Compartment
   └── livePreviewTheme
 ```
 
@@ -53,6 +57,25 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 - 异步加载后通过 StateEffect 更新 widget
 - 失败时显示占位与错误信息
 
+当前已经支持 `resolveSrc` 返回 `string | Promise<string>`，异步完成后在 widget 内部替换为 `<img>`；失败时显示错误占位。
+
+## 3.1 代码高亮和数学
+
+- fenced code 由 `markdown({ codeLanguages })` 加载语言 grammar
+- JS/TS/TSX、Python、HTML、CSS、JSON 使用动态 import
+- KaTeX 使用单行 `$...$` / `$$...$$` 扫描；光标进入对应行时显示源码
+- 多行块级公式、公式编辑面板仍是后续工作
+
+## 3.2 表格
+
+当前表格实现是只读 widget：
+
+- 选区在表格外时，整张 GFM 表格替换为 `<table>`
+- 选区进入表格时，重新显示原始 Markdown
+- 点击表格会把选区移动到表格起点
+
+可编辑单元格、Tab 导航和行列操作尚未实现。
+
 ## 4. 为什么 wikilink 单独实现
 
 标准 Markdown 解析器不认识 `[[target]]`，因此 wikilink 使用独立扫描器：
@@ -77,8 +100,10 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 ## 6. 当前边界
 
 - 表格保留 Markdown 源文本，未做 WYSIWYG table widget
+- 表格目前只读
+- 块级数学公式仅支持单行
 - 没有自定义 Markdown parser extension 处理 `[[]]`
-- 没有异步资产 resolver
+- 还没有附件桥和 blob/data URL 生命周期管理
 - 没有 Obsidian 插件 extension 兼容层
 - 还没有性能基准
 

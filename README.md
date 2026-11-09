@@ -42,22 +42,27 @@
 - `[[` 标题自动补全
 - wikilink 未解析样式
 - Markdown 图片 block widget
+- 异步图片资产 resolver、加载/失败占位
 - 水平线 widget
+- GFM 表格只读 widget（光标进入表格时显示源码）
+- KaTeX 行内/单行块级公式
+- 常用 fenced code 语言高亮（JS/TS/TSX/Python/HTML/CSS/JSON，按需加载）
 - Live Preview / Source 模式切换
 - read-only 模式
+- 宿主自定义 CM6 extension 注入
 - 受控 `value` / `onChange`
 - Vitest + jsdom 测试
 
 ## 尚未实现
 
-- 可编辑 WYSIWYG 表格
+- 可编辑 WYSIWYG 表格（当前只读）
 - 表格单元格导航和增删行列
-- KaTeX 数学公式
+- 多行 `$$...$$` 块级公式
 - callout / embed / block ref
 - frontmatter / properties / inline tags
 - hover preview
-- 代码块语言高亮
-- async 资产解析和附件桥
+- 更多代码语言和代码复制按钮
+- 附件桥和 blob/data URL 生命周期管理
 - MDX / HTML
 - Obsidian `registerEditorExtension` 兼容层
 - 大规模文档基准测试
@@ -105,8 +110,8 @@ docs/
 
 ## 下一步
 
-1. 增加图片/附件异步 resolver
-2. 增加 table widget，先做只读渲染，再做单元格编辑
-3. 接入 KaTeX 和 callout
-4. 定义插件 extension 接口，验证动态扩展
+1. 增加附件桥和更完整的图片生命周期管理
+2. 表格 widget 从只读升级为单元格编辑
+3. 接入 callout、embed、frontmatter、properties
+4. 完善插件 extension 接口和动态扩展
 5. 用真实笔记做 IME、撤销、滚动和大文档基准测试
