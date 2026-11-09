@@ -44,8 +44,8 @@
 - Markdown 图片 block widget
 - 异步图片资产 resolver、加载/失败占位
 - 水平线 widget
-- GFM 表格可编辑 widget（单元格编辑、Save/Markdown 切换）
-- KaTeX 行内/单行块级公式
+- GFM 表格可编辑 widget（单元格编辑、Tab 导航、行列增删、Save/Markdown 切换）
+- KaTeX 行内/多行块级公式
 - 常用 fenced code 语言高亮（JS/TS/TSX/Python/HTML/CSS/JSON，按需加载）
 - `#tag` 行内标签样式和点击回调
 - Obsidian 风格 blockquote callout（note/tip/warning/danger 等）
@@ -60,8 +60,7 @@
 
 ## 尚未实现
 
-- 表格 Tab 导航、行列增删和单元格公式
-- 多行 `$$...$$` 块级公式
+- 表格逐单元格事务、公式和复杂单元格 Markdown
 - embed 内容渲染（当前只识别和样式化）
 - block reference 跳转
 - properties 类型选择和 tag 面板
@@ -116,7 +115,7 @@ docs/
 ## 下一步
 
 1. 增加附件桥和更完整的图片生命周期管理
-2. 表格 Tab 导航、行列增删和组合编辑
+2. 表格逐单元格事务、复杂单元格内容和组合编辑
 3. 接入 embed 内容渲染、block ref 跳转和 hover preview
 4. 完善 properties 编辑和插件 extension 接口
 5. 用真实笔记做 IME、撤销、滚动和大文档基准测试

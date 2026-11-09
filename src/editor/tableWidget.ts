@@ -72,6 +72,7 @@ class TableWidget extends WidgetType {
   toDOM(view: EditorView): HTMLElement {
     const wrapper = document.createElement('div');
     wrapper.className = 'cm-live-table';
+    const align = [...this.table.align];
     const toolbar = document.createElement('div');
     toolbar.className = 'cm-live-table__toolbar';
     const hint = document.createElement('span');
@@ -92,19 +93,54 @@ class TableWidget extends WidgetType {
     save.dataset.action = 'save';
     save.textContent = 'Save';
     save.addEventListener('mousedown', (event) => event.preventDefault());
-    toolbar.append(hint, source, save);
+    const addRowButton = document.createElement('button');
+    addRowButton.type = 'button';
+    addRowButton.className = 'cm-live-table__action';
+    addRowButton.dataset.action = 'add-row';
+    addRowButton.textContent = '+ Row';
+    addRowButton.addEventListener('mousedown', (event) => event.preventDefault());
+    const addColumnButton = document.createElement('button');
+    addColumnButton.type = 'button';
+    addColumnButton.className = 'cm-live-table__action';
+    addColumnButton.dataset.action = 'add-column';
+    addColumnButton.textContent = '+ Col';
+    addColumnButton.addEventListener('mousedown', (event) => event.preventDefault());
+    const removeRowButton = document.createElement('button');
+    removeRowButton.type = 'button';
+    removeRowButton.className = 'cm-live-table__action';
+    removeRowButton.dataset.action = 'remove-row';
+    removeRowButton.textContent = '- Row';
+    const removeColumnButton = document.createElement('button');
+    removeColumnButton.type = 'button';
+    removeColumnButton.className = 'cm-live-table__action';
+    removeColumnButton.dataset.action = 'remove-column';
+    removeColumnButton.textContent = '- Col';
+    toolbar.append(
+      hint,
+      source,
+      addRowButton,
+      addColumnButton,
+      removeRowButton,
+      removeColumnButton,
+      save,
+    );
     wrapper.append(toolbar);
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
+    const makeCell = (tag: 'th' | 'td', value = ''): HTMLTableCellElement => {
+      const cell = document.createElement(tag);
+      cell.textContent = value;
+      cell.contentEditable = 'true';
+      cell.spellcheck = false;
+      cell.tabIndex = 0;
+      return cell;
+    };
     for (const [index, cell] of this.table.header.entries()) {
-      const th = document.createElement('th');
-      th.textContent = cell;
-      th.contentEditable = 'true';
-      th.spellcheck = false;
-      const align = this.table.align[index];
-      if (align !== null) th.style.textAlign = align;
+      const th = makeCell('th', cell);
+      const alignment = align[index];
+      if (alignment !== null) th.style.textAlign = alignment;
       headerRow.append(th);
     }
     thead.append(headerRow);
@@ -114,18 +150,53 @@ class TableWidget extends WidgetType {
     for (const row of this.table.rows) {
       const tr = document.createElement('tr');
       for (const [index, cell] of row.entries()) {
-        const td = document.createElement('td');
-        td.textContent = cell;
-        td.contentEditable = 'true';
-        td.spellcheck = false;
-        const align = this.table.align[index];
-        if (align !== null) td.style.textAlign = align;
+        const td = makeCell('td', cell);
+        const alignment = align[index];
+        if (alignment !== null) td.style.textAlign = alignment;
         tr.append(td);
       }
       tbody.append(tr);
     }
     table.append(tbody);
     wrapper.append(table);
+
+    const cells = (): HTMLTableCellElement[] =>
+      [...table.querySelectorAll<HTMLTableCellElement>('th, td')];
+    const addRow = (focus: boolean): HTMLTableRowElement => {
+      const row = document.createElement('tr');
+      for (let index = 0; index < headerRow.children.length; index += 1) {
+        const cell = makeCell('td');
+        const alignment = align[index];
+        if (alignment !== null) cell.style.textAlign = alignment;
+        row.append(cell);
+      }
+      tbody.append(row);
+      if (focus) row.querySelector<HTMLTableCellElement>('td')?.focus();
+      return row;
+    };
+    const addColumn = (): void => {
+      headerRow.append(makeCell('th'));
+      for (const row of tbody.querySelectorAll('tr')) {
+        row.append(makeCell('td'));
+      }
+      align.push(null);
+    };
+    const removeRow = (): void => {
+      if (tbody.querySelectorAll('tr').length <= 1) return;
+      tbody.lastElementChild?.remove();
+    };
+    const removeColumn = (): void => {
+      if (headerRow.children.length <= 1) return;
+      headerRow.lastElementChild?.remove();
+      for (const row of tbody.querySelectorAll('tr')) {
+        row.lastElementChild?.remove();
+      }
+      align.pop();
+    };
+    addRowButton.addEventListener('click', () => addRow(false));
+    addColumnButton.addEventListener('click', () => addColumn());
+    removeRowButton.addEventListener('click', removeRow);
+    removeColumnButton.addEventListener('click', removeColumn);
 
     const commit = (): void => {
       const header = [...table.querySelectorAll('thead th')].map(
@@ -134,7 +205,7 @@ class TableWidget extends WidgetType {
       const rows = [...table.querySelectorAll('tbody tr')].map((row) =>
         [...row.querySelectorAll('td')].map((cell) => cell.textContent ?? ''),
       );
-      const next = serializeTable(header, rows, this.table.align);
+      const next = serializeTable(header, rows, align);
       if (next === this.raw) return;
       view.dispatch({
         changes: { from: this.from, to: this.to, insert: next },
@@ -147,6 +218,22 @@ class TableWidget extends WidgetType {
       if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
         event.preventDefault();
         commit();
+        return;
+      }
+      if (event.key === 'Tab') {
+        const target = event.target;
+        if (!(target instanceof HTMLTableCellElement)) return;
+        const allCells = cells();
+        const index = allCells.indexOf(target);
+        if (index < 0) return;
+        event.preventDefault();
+        if (event.shiftKey) {
+          allCells[Math.max(0, index - 1)]?.focus();
+        } else if (index === allCells.length - 1) {
+          addRow(true);
+        } else {
+          allCells[index + 1]?.focus();
+        }
       }
     });
     return wrapper;

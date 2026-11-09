@@ -26,6 +26,17 @@ describe('scanMath', () => {
     const fenced = '```\n$x$\n```\n`$y$`';
     expect(scanMath(fenced)).toEqual([]);
   });
+
+  it('finds multi-line display math', () => {
+    expect(scanMath('Before\n$$\na + b\n$$\nAfter')).toEqual([
+      {
+        from: 7,
+        to: 18,
+        expression: 'a + b',
+        display: true,
+      },
+    ]);
+  });
 });
 
 describe('mathPreview', () => {
@@ -33,6 +44,15 @@ describe('mathPreview', () => {
     const view = makeView('Inline $x^2$\n\nCursor here');
     view.dispatch({ selection: { anchor: view.state.doc.length } });
     expect(view.contentDOM.querySelector('.cm-live-math .katex')).not.toBeNull();
+    view.destroy();
+  });
+
+  it('renders multi-line display math as a block', () => {
+    const view = makeView('Before\n$$\na + b\n$$\nAfter');
+    view.dispatch({ selection: { anchor: view.state.doc.length } });
+    expect(
+      view.contentDOM.querySelector('.cm-live-math--block .katex-display'),
+    ).not.toBeNull();
     view.destroy();
   });
 });

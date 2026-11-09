@@ -66,8 +66,9 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 
 - fenced code 由 `markdown({ codeLanguages })` 加载语言 grammar
 - JS/TS/TSX、Python、HTML、CSS、JSON 使用动态 import
-- KaTeX 使用单行 `$...$` / `$$...$$` 扫描；光标进入对应行时显示源码
-- 多行块级公式、公式编辑面板仍是后续工作
+- KaTeX 使用行内 `$...$` 和多行 `$$...$$` 扫描；光标进入公式范围时显示源码
+- 行内公式用 ViewPlugin，块级公式用 StateField block widget
+- 公式编辑面板仍是后续工作
 
 ## 3.2 表格
 
@@ -76,9 +77,11 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 - 选区在表格外时，整张 GFM 表格替换为可编辑 `<table>`
 - 选区进入表格时，重新显示原始 Markdown
 - 单元格使用 `contenteditable`，Save 按钮或 Ctrl/Cmd+Enter 提交
+- Tab/Shift+Tab 在单元格间移动，末尾 Tab 自动追加一行
+- 工具栏支持增删行/列
 - Markdown 按钮把选区移到表格起点，显示源码
 
-Tab 导航、行列操作和单元格内复杂 Markdown 尚未实现。
+逐单元格事务和单元格内复杂 Markdown 尚未实现。
 
 ## 4. 为什么 wikilink 单独实现
 
@@ -117,7 +120,6 @@ Tab 导航、行列操作和单元格内复杂 Markdown 尚未实现。
 
 - 表格保留 Markdown 源文本，未做 WYSIWYG table widget
 - 表格编辑是整表提交，不是逐单元格事务
-- 块级数学公式仅支持单行
 - 没有自定义 Markdown parser extension 处理 `[[]]`
 - 还没有附件桥和 blob/data URL 生命周期管理
 - 没有 Obsidian 插件 extension 兼容层

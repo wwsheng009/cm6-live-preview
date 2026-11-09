@@ -88,6 +88,47 @@ describe('tableWidget', () => {
     view.destroy();
   });
 
+  it('moves focus with Tab and appends a row at the end', () => {
+    const view = makeView(`${TABLE}\n\nAfter`);
+    view.dispatch({ selection: { anchor: view.state.doc.length } });
+    const cells = [
+      ...view.contentDOM.querySelectorAll<HTMLTableCellElement>('th, td'),
+    ];
+    cells[0]?.focus();
+    cells[0]?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(cells[1]);
+
+    cells[cells.length - 1]?.focus();
+    cells[cells.length - 1]?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }),
+    );
+    expect(
+      view.contentDOM.querySelectorAll('.cm-live-table tbody tr'),
+    ).toHaveLength(3);
+    view.destroy();
+  });
+
+  it('adds a column and row before saving', () => {
+    const view = makeView(`${TABLE}\n\nAfter`);
+    view.dispatch({ selection: { anchor: view.state.doc.length } });
+    view.contentDOM
+      .querySelector<HTMLButtonElement>('[data-action="add-column"]')
+      ?.click();
+    view.contentDOM
+      .querySelector<HTMLButtonElement>('[data-action="add-row"]')
+      ?.click();
+    view.contentDOM
+      .querySelector<HTMLButtonElement>('[data-action="save"]')
+      ?.click();
+    expect(view.state.doc.toString()).toContain(
+      '| Name | Value |  |\n| :--- | ---: | --- |',
+    );
+    expect(view.state.doc.toString()).toContain('| A | 1 |  |');
+    view.destroy();
+  });
+
   it('keeps the source visible when the selection enters the table', () => {
     const view = makeView(TABLE);
     view.dispatch({ selection: { anchor: 1 } });
