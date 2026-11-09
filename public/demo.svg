@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1d2228"/>
+      <stop offset="1" stop-color="#111315"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1">
+      <stop offset="0" stop-color="#d8a15d"/>
+      <stop offset="1" stop-color="#9cb8e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="420" fill="url(#bg)"/>
+  <circle cx="780" cy="70" r="190" fill="#d8a15d" opacity="0.08"/>
+  <circle cx="120" cy="390" r="220" fill="#9cb8e8" opacity="0.06"/>
+  <text x="72" y="168" fill="#e8e4dc" font-family="Segoe UI, sans-serif" font-size="58" font-weight="700" letter-spacing="-2">CM6 Live Preview</text>
+  <text x="76" y="222" fill="#a8a49d" font-family="Cascadia Code, monospace" font-size="21">raw markdown · decoration only · no HTML tree</text>
+  <rect x="74" y="276" width="280" height="8" rx="4" fill="url(#accent)"/>
+  <text x="76" y="340" fill="#74716c" font-family="Cascadia Code, monospace" font-size="16">itsm-editor-lab / 2026</text>
+</svg>
