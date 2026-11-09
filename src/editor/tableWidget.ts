@@ -40,10 +40,10 @@ export const parseTable = (raw: string): ParsedTable | null => {
   const header = splitRow(lines[0] ?? '');
   const delimiter = splitRow(lines[1] ?? '');
   if (header.length === 0 || delimiter.length !== header.length) return null;
-  const align = delimiter.map(parseAlign);
-  if (align.some((value) => value === null) && !delimiter.every((cell) => /^:?-{3,}:?$/.test(cell))) {
+  if (!delimiter.every((cell) => /^:?-{3,}:?$/.test(cell.trim()))) {
     return null;
   }
+  const align = delimiter.map(parseAlign);
   const rows = lines.slice(2).map((line) => {
     const cells = splitRow(line);
     return header.map((_, index) => cells[index] ?? '');
@@ -54,13 +54,14 @@ export const parseTable = (raw: string): ParsedTable | null => {
 class TableWidget extends WidgetType {
   constructor(
     readonly table: ParsedTable,
+    readonly raw: string,
     readonly from: number,
   ) {
     super();
   }
 
   eq(other: TableWidget): boolean {
-    return other.from === this.from && other.table === this.table;
+    return other.from === this.from && other.raw === this.raw;
   }
 
   toDOM(view: EditorView): HTMLElement {
@@ -117,11 +118,12 @@ const buildTables = (state: EditorState): DecorationSet => {
         (range) => range.from <= node.to && range.to >= node.from,
       );
       if (active) return;
-      const parsed = parseTable(state.doc.sliceString(node.from, node.to));
+      const raw = state.doc.sliceString(node.from, node.to);
+      const parsed = parseTable(raw);
       if (parsed === null) return;
       ranges.push(
         Decoration.replace({
-          widget: new TableWidget(parsed, node.from),
+          widget: new TableWidget(parsed, raw, node.from),
           block: true,
         }).range(node.from, node.to),
       );
