@@ -96,6 +96,8 @@ CodeMirror 6 的 block widget 不能由普通 ViewPlugin 提供，因此图片�
 - `callouts()` 扫描 `> [!note]` 及其后续引用行
 - `frontmatterField()` 在选区离开时把 YAML 头替换为只读 properties card
 - `![[embed]]` 与普通 wikilink 共用扫描器，但使用独立样式和 `data-wikilink-embed`
+- `hoverTooltip` 根据宿主 `wikiPreview` 回调显示同步或异步内容
+- heading/block anchor 在解析时会被剥离，但点击回调仍保留完整 target
 
 这些能力都只修改 view 层，不改变原始 Markdown。
 

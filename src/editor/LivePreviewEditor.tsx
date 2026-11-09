@@ -41,6 +41,10 @@ export interface LivePreviewEditorProps {
   readonly wikiSuggestions?: readonly string[];
   readonly isWikiLinkResolved?: (target: string) => boolean;
   readonly onOpenWikiLink?: (target: string) => void;
+  readonly wikiPreview?: (
+    target: string,
+    embedded: boolean,
+  ) => string | Promise<string>;
   readonly onOpenTag?: (tag: string) => void;
   readonly resolveImage?: (
     src: string,
@@ -78,6 +82,7 @@ export const LivePreviewEditor = forwardRef<
     wikiSuggestions = [],
     isWikiLinkResolved,
     onOpenWikiLink,
+    wikiPreview,
     onOpenTag,
     resolveImage,
     onOpenLink,
@@ -97,6 +102,7 @@ export const LivePreviewEditor = forwardRef<
   const wikiSuggestionsRef = useRef<readonly string[]>(wikiSuggestions);
   const isWikiLinkResolvedRef = useRef(isWikiLinkResolved);
   const onOpenWikiLinkRef = useRef(onOpenWikiLink);
+  const wikiPreviewRef = useRef(wikiPreview);
   const onOpenTagRef = useRef(onOpenTag);
   const resolveImageRef = useRef(resolveImage);
   const onOpenLinkRef = useRef(onOpenLink);
@@ -111,6 +117,7 @@ export const LivePreviewEditor = forwardRef<
   wikiSuggestionsRef.current = wikiSuggestions;
   isWikiLinkResolvedRef.current = isWikiLinkResolved;
   onOpenWikiLinkRef.current = onOpenWikiLink;
+  wikiPreviewRef.current = wikiPreview;
   onOpenTagRef.current = onOpenTag;
   resolveImageRef.current = resolveImage;
   onOpenLinkRef.current = onOpenLink;
@@ -153,6 +160,9 @@ export const LivePreviewEditor = forwardRef<
           isResolved: (target) =>
             isWikiLinkResolvedRef.current?.(target) ?? true,
           onOpen: (target) => onOpenWikiLinkRef.current?.(target),
+          preview: (target, embedded) =>
+            wikiPreviewRef.current?.(target, embedded) ??
+            'Ctrl/Cmd+click to open',
         }),
         editableCompartment.current.of(
           editableExtensions(readOnlyRef.current),

@@ -51,6 +51,7 @@
 - Obsidian 风格 blockquote callout（note/tip/warning/danger 等）
 - frontmatter 只读 properties card（光标进入时显示源码）
 - `![[embed]]` 识别、样式和点击回调
+- wikilink/embed hover preview（由宿主 `wikiPreview` 回调提供内容）
 - Live Preview / Source 模式切换
 - read-only 模式
 - 宿主自定义 CM6 extension 注入
@@ -66,7 +67,7 @@
 - block reference 跳转
 - frontmatter 编辑
 - properties 编辑和 tag 面板
-- hover preview
+- embed hover 的内容编辑和引用更新
 - 更多代码语言和代码复制按钮
 - 附件桥和 blob/data URL 生命周期管理
 - MDX / HTML

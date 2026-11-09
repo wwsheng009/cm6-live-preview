@@ -17,6 +17,7 @@
 | fenced code 高亮 | markdown codeLanguages + 动态 import | `pnpm build` |
 | wikilink | mark + DOM handler | `wikiLinks.test.ts` |
 | embed 识别 | mark + DOM handler | `wikiLinks.test.ts` |
+| wikilink hover | hoverTooltip + host preview | 手工验证 |
 | inline tag | mark + DOM handler | `tags.test.ts` |
 | callout | line decoration | `callouts.test.ts` |
 | frontmatter card | StateField + properties widget | `frontmatter.test.ts` |
@@ -39,6 +40,7 @@
 | embed | 识别 + 样式 + 回调 | 内容渲染和引用更新 |
 | frontmatter | 只读 properties card | 字段编辑、类型选择 |
 | tag | 样式 + Ctrl/Cmd 点击回调 | tag 面板、重命名 |
+| hover preview | 文本/异步内容 | 富 Markdown 渲染和缓存 |
 | 主题 | CSS 变量 + CM6 theme | 与主产品 token 对齐 |
 
 ## 计划中
@@ -49,7 +51,7 @@
 - block reference `^id`
 - frontmatter / properties 编辑
 - tag 面板和重命名
-- hover preview
+- embed 内容编辑和引用更新
 - dynamic plugin extensions
 - large document performance benchmark
 - IME / iOS / Android 兼容性测试

@@ -146,6 +146,11 @@ export function App(): JSX.Element {
             onOpenWikiLink={(target) => {
               setLastAction(`Open wiki link: ${target}`);
             }}
+            wikiPreview={(target, embedded) =>
+              embedded
+                ? `Embed preview for “${target}” will be provided by the host.`
+                : `“${target}” is a note in the catalog. Ctrl/Cmd+click to open.`
+            }
             onOpenTag={(tag) => {
               setLastAction(`Open tag: #${tag}`);
             }}

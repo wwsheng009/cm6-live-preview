@@ -5,6 +5,7 @@ import { EditorView } from '@codemirror/view';
 
 import {
   scanWikiLinks,
+  wikiLinkBaseTarget,
   wikiLinkCompletionOptions,
   wikiLinks,
 } from '../wikiLinks';
@@ -76,6 +77,13 @@ describe('wikiLinkCompletionOptions', () => {
   });
 });
 
+describe('wikiLinkBaseTarget', () => {
+  it('drops heading and block fragments', () => {
+    expect(wikiLinkBaseTarget('项目#风险')).toBe('项目');
+    expect(wikiLinkBaseTarget('项目^block')).toBe('项目');
+  });
+});
+
 describe('wikiLinks', () => {
   it('renders wiki links as decorations and opens with Ctrl+click', () => {
     let opened = '';
@@ -119,5 +127,24 @@ describe('wikiLinks', () => {
     expect(resolved.contentDOM.querySelector('.cm-live-wikilink--unresolved')).not.toBeNull();
     view.destroy();
     resolved.destroy();
+  });
+
+  it('resolves using the base target for anchored links', () => {
+    const view = makeView('[[项目#风险]]');
+    const anchored = new EditorView({
+      parent: document.body,
+      state: EditorState.create({
+        doc: '[[项目#风险]]',
+        extensions: [
+          markdown(),
+          wikiLinks({ isResolved: (target) => target === '项目' }),
+        ],
+      }),
+    });
+    expect(
+      anchored.contentDOM.querySelector('.cm-live-wikilink--unresolved'),
+    ).toBeNull();
+    view.destroy();
+    anchored.destroy();
   });
 });

@@ -11,6 +11,7 @@ import {
 import {
   Decoration,
   EditorView,
+  hoverTooltip,
   ViewPlugin,
   type DecorationSet,
   type ViewUpdate,
@@ -28,6 +29,10 @@ export interface WikiLinksOptions {
   readonly suggestions?: () => readonly string[];
   readonly isResolved?: (target: string) => boolean;
   readonly onOpen?: (target: string) => void;
+  readonly preview?: (
+    target: string,
+    embedded: boolean,
+  ) => string | Promise<string>;
 }
 
 const FENCE = /^(`{3,}|~{3,})/;
@@ -37,6 +42,10 @@ const MAX_SUGGESTIONS = 50;
 
 const normalize = (value: string): string =>
   value.normalize('NFKC').toLocaleLowerCase();
+
+/** Resolve against the note name, ignoring heading/block fragments. */
+export const wikiLinkBaseTarget = (target: string): string =>
+  target.split('#')[0]?.split('^')[0]?.trim() ?? '';
 
 /** Find wikilinks while skipping fenced and inline code. */
 export const scanWikiLinks = (value: string): readonly WikiLinkRange[] => {
@@ -146,7 +155,8 @@ const buildDecorations = (
 ): DecorationSet => {
   const builder = new RangeSetBuilder<Decoration>();
   for (const range of scanWikiLinks(state.doc.toString())) {
-    const resolved = options.isResolved?.(range.target) ?? true;
+    const resolved =
+      options.isResolved?.(wikiLinkBaseTarget(range.target)) ?? true;
     const baseClass = range.embedded ? 'cm-live-embed' : 'cm-live-wikilink';
     builder.add(
       range.from,
@@ -192,8 +202,47 @@ export const wikiLinks = (options: WikiLinksOptions = {}): Extension => {
     },
   );
 
+  const previewTooltip = hoverTooltip((view, position) => {
+    const range = scanWikiLinks(view.state.doc.toString()).find(
+      (candidate) =>
+        position >= candidate.from && position <= candidate.to,
+    );
+    if (range === undefined) return null;
+    const target = range.target;
+    return {
+      pos: range.from,
+      end: range.to,
+      above: true,
+      create: () => {
+        const dom = document.createElement('div');
+        dom.className = 'cm-live-preview-tooltip';
+        const heading = document.createElement('div');
+        heading.className = 'cm-live-preview-tooltip__title';
+        heading.textContent = range.embedded
+          ? `Embed · ${target}`
+          : `Preview · ${target}`;
+        const body = document.createElement('div');
+        body.className = 'cm-live-preview-tooltip__body';
+        body.textContent = options.preview === undefined ? 'Ctrl/Cmd+click to open' : 'Loading…';
+        dom.append(heading, body);
+
+        if (options.preview !== undefined) {
+          void Promise.resolve(options.preview(target, range.embedded))
+            .then((text) => {
+              body.textContent = text;
+            })
+            .catch(() => {
+              body.textContent = 'Preview unavailable';
+            });
+        }
+        return { dom };
+      },
+    };
+  });
+
   return [
     decorations,
+    previewTooltip,
     EditorState.languageData.of(() => [{ autocomplete: source }]),
     EditorView.domEventHandlers({
       click: (event) => {
